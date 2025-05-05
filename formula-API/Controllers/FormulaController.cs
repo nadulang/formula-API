@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using formula_API.DTO;
+using formula_API.Interface;
+using formula_API.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,33 +12,51 @@ namespace formula_API.Controllers
     [ApiController]
     public class FormulaController : ControllerBase
     {
-        // GET: api/<ValuesController>
+        private readonly IFormulaRepository _repository;
+
+        public FormulaController(IFormulaRepository repository)
+        {
+            _repository = repository;
+        }
+
         [HttpGet]
-        public IEnumerable<string> GetFormulas()
+        public async Task<IActionResult> GetFormulas (CancellationToken cancellationToken = default)
         {
-            return new string[] { "value1", "value2" };
+            var result = new BaseResponse<List<FormulaDTO>>();
+
+            try
+            {
+                var data = await _repository.GetFormulas(cancellationToken);
+                result.Data = data;
+            }
+            catch (Exception e)
+            {
+
+                result.ErrorMessage = $"Error get formulas: {e}";
+            }
+            return Ok(result);
         }
 
-        // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Task<IActionResult> Get(int id)
         {
-            return "value";
+
+            var result = new BaseResponse<List<FormulaDTO>>();
+            var data = await _repository.GetFormula(cancellationToken);
+            result.Data = data;
+            return Ok(result);
         }
 
-        // POST api/<ValuesController>
         [HttpPost("add")]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/<ValuesController>/5
         [HttpPut("update")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/<ValuesController>/5
         [HttpDelete("delete")]
         public void Delete(int id)
         {
