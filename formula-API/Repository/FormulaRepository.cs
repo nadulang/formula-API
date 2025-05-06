@@ -70,7 +70,7 @@ namespace formula_API.Repository
                          .Include(f => f.Product)
                          .FirstOrDefaultAsync(x => x.Product.ProductCode == productCode, cancellationToken);
 
-                if (getFormula?.StepsData == null)
+                if (getFormula == null || getFormula?.StepsData == null)
                     return null;
 
                 var stepsData = JsonConvert.DeserializeObject<StepsDataDTO>(getFormula.StepsData);
