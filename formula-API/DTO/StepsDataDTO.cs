@@ -2,7 +2,7 @@
 {
     public class StepsDataDTO
     {
-        public List<Step> steps { get; set; }
+        public List<Step> Steps { get; set; }
     }
 
     public class Step
@@ -16,8 +16,8 @@
     {
         public string deskripsi { get; set; }
         public int durasi { get; set; }
-        public double suhu { get; set; }
-        public double tekanan { get; set; }
+        public float suhu { get; set; }
+        public float tekanan { get; set; }
     }
 
     public class Substep

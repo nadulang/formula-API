@@ -2,7 +2,6 @@
 using formula_API.Interface;
 using formula_API.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,7 +19,7 @@ namespace formula_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFormulas (CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetFormulas(CancellationToken cancellationToken = default)
         {
             var result = new BaseResponse<List<FormulaDTO>>();
 
@@ -31,35 +30,44 @@ namespace formula_API.Controllers
             }
             catch (Exception e)
             {
-
-                result.ErrorMessage = $"Error get formulas: {e}";
+                result.ErrorMessage = $"Error get formulas: {e.Message}";
             }
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
-        public Task<IActionResult> Get(int id)
+        [HttpGet("get-steps")]
+        public async Task<IActionResult> GetSteps(string productCode, CancellationToken cancellationToken = default)
         {
+            var result = new BaseResponse<StepsDataDTO>();
+            try
+            {
+                var data = await _repository.GetSteps(productCode, cancellationToken);
+                if (data == null) return NotFound();
+                result.Data = data;
+            }
+            catch (Exception e)
+            {
 
-            var result = new BaseResponse<List<FormulaDTO>>();
-            var data = await _repository.GetFormula(cancellationToken);
-            result.Data = data;
+                result.ErrorMessage = $"Error get formula: {e.Message}";
+            }
             return Ok(result);
         }
 
-        [HttpPost("add")]
-        public void Post([FromBody] string value)
+        [HttpGet("get-parameter")]
+        public async Task<IActionResult> GetParameter(string productCode, string stepTitle, CancellationToken cancellationToken = default)
         {
-        }
-
-        [HttpPut("update")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        [HttpDelete("delete")]
-        public void Delete(int id)
-        {
+            var result = new BaseResponse<StepParameter>();
+            try
+            {
+                var data = await _repository.GetParameter(productCode, stepTitle, cancellationToken);
+                if (data == null) return NotFound();
+                result.Data = data;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = $"Error get parameter: {e.Message}";
+            }
+            return Ok(result);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class FormulaDTO
     {
-        public int ProductId { get; set; }
+        public string ProductCode { get; set; }
         public string ProductName { get; set; }
         public string FormulaTitle { get; set; }
         public StepsDataDTO StepsData { get; set; }

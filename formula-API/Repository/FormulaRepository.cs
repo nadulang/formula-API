@@ -17,36 +17,73 @@ namespace formula_API.Repository
 
         public async Task<List<FormulaDTO>> GetFormulas(CancellationToken cancellationToken)
         {
-
-            return await _context.Formulas
+            var result = new List<FormulaDTO>();
+            try
+            {
+                result =  await _context.Formulas
                     .Include(f => f.Product)
                     .Select(f => new FormulaDTO
                     {
-                        ProductId = f.ProductId,
+                        ProductCode = f.Product.ProductCode,
+                        ProductName = f.Product.ProductName,
                         StepsData = JsonConvert.DeserializeObject<StepsDataDTO>(f.StepsData),
                         FormulaTitle = f.Title,
-                        ProductName = f.Product.ProductName
                     })
                     .ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                Console.Write(ex);
+            }
+            return result;
         }
 
-        public async Task<FormulaDTO> GetFormula(int id, CancellationToken cancellationToken)
+        public async Task<StepsDataDTO> GetSteps(string productCode, CancellationToken cancellationToken)
         {
-
-            var result = await _context.Formulas
-                    .Include(f => f.Product)
-                    .FirstOrDefaultAsync(f => f.ProductId == id, cancellationToken);
-
-            if (result == null)
-                return new FormulaDTO();
-
-            return new FormulaDTO
+            var result = new StepsDataDTO();
+            try
             {
-                ProductName = result?.Product?.ProductName,
-                FormulaTitle = result?.Title,
-                ProductId = result.ProductId,
-                StepsData = JsonConvert.DeserializeObject<StepsDataDTO>(result?.StepsData)
-            };
+                var getFormula = await _context.Formulas
+                    .Include(f => f.Product)
+                    .FirstOrDefaultAsync(x => x.Product.ProductCode == productCode, cancellationToken);
+
+                if (getFormula == null)
+                    return null;
+
+                 result = JsonConvert.DeserializeObject<StepsDataDTO>(getFormula?.StepsData);
+            }
+            catch (Exception ex) 
+            {
+                var message = ex.Message;
+                Console.Write(ex);
+            }
+            return result;
+        }
+
+        public async Task<StepParameter> GetParameter(string productCode, string stepTitle, CancellationToken cancellationToken)
+        {
+            var result = new StepParameter();
+            try
+            {
+                var getFormula = await _context.Formulas
+             .Include(f => f.Product)
+             .FirstOrDefaultAsync(x => x.Product.ProductCode == productCode, cancellationToken);
+
+                if (getFormula?.StepsData == null)
+                    return null;
+
+                var stepsData = JsonConvert.DeserializeObject<StepsDataDTO>(getFormula.StepsData);
+
+                var step = stepsData.Steps.FirstOrDefault(s => s.stepTitle.Contains(stepTitle, StringComparison.OrdinalIgnoreCase));
+                result = step?.parameters;
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                Console.Write(ex);
+            }
+            return result;
         }
     }
 }
