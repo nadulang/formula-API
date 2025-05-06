@@ -67,8 +67,8 @@ namespace formula_API.Repository
             try
             {
                 var getFormula = await _context.Formulas
-             .Include(f => f.Product)
-             .FirstOrDefaultAsync(x => x.Product.ProductCode == productCode, cancellationToken);
+                         .Include(f => f.Product)
+                         .FirstOrDefaultAsync(x => x.Product.ProductCode == productCode, cancellationToken);
 
                 if (getFormula?.StepsData == null)
                     return null;
