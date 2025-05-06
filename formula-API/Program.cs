@@ -19,7 +19,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    var env = builder.Environment.EnvironmentName;
+    Console.WriteLine($"Active Environment: {env}");
+
+    if (env == "Development")
+    {
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+});
 
 builder.Services.AddScoped<IFormulaRepository, FormulaRepository>();
 
@@ -36,7 +44,7 @@ using (var scope = app.Services.CreateScope())
             FormulaId = 1,
             ProductId = 1,
             Title = "Formulasi Jamu Obat Batuk",
-            StepsData = "{\n\"steps\": [\n    {\n      \"stepTitle\": \"Siapkan kunyit dan asam jawa\",\n      \"parameters\": {\n        \"deskripsi\": \"Iris kunyit dan siapkan asam jawa di dalam gelas.\",\n        \"durasi\": 3,\n        \"suhu\": 27.0,\n        \"tekanan\": 1.0\n      },\n      \"sub_steps\": [\n        {\n          \"subStepTitle\": \"Iris 2 ruas kunyit\",\n          \"sub_steps\": [\n            {\n              \"subStepTitle\": \"Gunakan talenan bersih\"\n            }\n          ]\n        },\n        {\n          \"subStepTitle\": \"Masukkan 1 sdt asam jawa\"\n        }\n      ]\n    },\n    {\n      \"stepTitle\": \"Tambahkan jeruk nipis\",\n      \"parameters\": {\n        \"deskripsi\": \"Masukkan irisan jeruk nipis untuk menambah rasa segar.\",\n        \"durasi\": 1,\n        \"suhu\": 40.0,\n        \"tekanan\": 1.0\n      }\n    }\n  ]\n}",
+            StepsData = "{\n    \"steps\": [\n      {\n        \"stepTitle\": \"Potong semua bahan\",\n        \"parameters\": {\n          \"deskripsi\": \"Memotong bahan-bahan utama menjadi bagian kecil agar mudah direbus.\",\n          \"durasi\": 5,\n          \"suhu\": 27.0,\n          \"tekanan\": 1.0\n        },\n        \"sub_steps\": [\n          {\n            \"subStepTitle\": \"Potong kunyit\",\n            \"sub_steps\": [\n              {\n                \"subStepTitle\": \"Gunakan pisau steril\"\n              }\n            ]\n          },\n          {\n            \"subStepTitle\": \"Potong kencur\"\n          },\n          {\n            \"subStepTitle\": \"Potong temulawak\"\n          }\n        ]\n      },\n      {\n        \"stepTitle\": \"Rebus dengan air hingga mendidih\",\n        \"parameters\": {\n          \"deskripsi\": \"Campur semua bahan dengan 200 ml air dan rebus hingga mendidih. Matikan api setelah mendidih.\",\n          \"durasi\": 7,\n          \"suhu\": 100.0,\n          \"tekanan\": 1.0\n        }\n      }\n    ]\n  }",
             CreatedDate = new DateTime(2025, 5, 4, 0, 0, 0, DateTimeKind.Utc),
             CreatedBy = "API"
         });
